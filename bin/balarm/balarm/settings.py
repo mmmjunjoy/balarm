@@ -26,7 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)if-@+&1ug^)wzbf49ekj+nh00s@o#fo3#d_faz-bz4f&xwtu('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
 
 ALLOWED_HOSTS = []
 
@@ -44,9 +45,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'channels',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -85,16 +88,16 @@ ASGI_APPLICATION = 'balarm.asgi.application'
 
 
 # settings.py에 추가하거나 테스트 전용 설정 파일을 만들어 사용
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'test_bungry_alarm',
-#         'USER': 'root',
-#         'PASSWORD': 'whs20102011',  # 실제 비밀번호로 교체
-#         'HOST': '127.0.0.1',
-#         'PORT': '3306',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'test_bungry_alarm',
+        'USER': 'root',
+        'PASSWORD': 'whs20102011',  # 실제 비밀번호로 교체
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
 
 # import sys
 # if 'test' in sys.argv:
@@ -113,16 +116,16 @@ ASGI_APPLICATION = 'balarm.asgi.application'
 #     }
 
 # 실제
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bungry_alarm',
-        'USER' : 'root',
-        'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
-        'HOST' : '127.0.0.1',
-        'PORT' : '3306',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'bungry_alarm',
+#         'USER' : 'root',
+#         'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
+#         'HOST' : '127.0.0.1',
+#         'PORT' : '3306',
+#     }
+# }
 
 
 
