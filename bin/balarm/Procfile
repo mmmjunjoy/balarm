@@ -1,3 +1,3 @@
-web: source bin/activate && cd bin/balarm && gunicorn balarm.wsgi:application --bind 0.0.0.0:8000 --log-file -
-worker: source bin/activate && cd bin/balarm && celery -A balarm worker --loglevel=info
-beat: source bin/activate && cd bin/balarm && celery -A balarm beat --loglevel=infos
+web: cd bin/balarm && gunicorn balarm.wsgi:application --bind 0.0.0.0:8000 --log-file -
+worker: cd bin/balarm && celery -A balarm worker --loglevel=info
+beat: cd bin/balarm && celery -A balarm beat --loglevel=infos
