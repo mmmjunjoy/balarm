@@ -85,19 +85,29 @@ ASGI_APPLICATION = 'balarm.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+import environ
 
+import os
+
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, 'env'))
+
+DATABASE ={
+    'default': env.db(),
+}
 
 # settings.py에 추가하거나 테스트 전용 설정 파일을 만들어 사용
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test_bungry_alarm',
-        'USER': 'root',
-        'PASSWORD': 'whs20102011',  # 실제 비밀번호로 교체
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'test_bungry_alarm',
+#         'USER': 'root',
+#         'PASSWORD': 'whs20102011',  # 실제 비밀번호로 교체
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+# }
 
 # import sys
 # if 'test' in sys.argv:
