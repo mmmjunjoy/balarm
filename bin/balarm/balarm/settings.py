@@ -245,13 +245,21 @@ CELERY_TIMEZONE = 'Asia/seoul'
 
 #redis를 사용하여 채널 레이어 설정
 
+# CHANNEL_LAYERS = {
+#     'default' : {
+#         'BACKEND' : 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG' : {
+#             "hosts" : [("127.0.0.1",6379)],
+#         },
+#     }
+
+# }
+
 CHANNEL_LAYERS = {
-    'default' : {
-        'BACKEND' : 'channels_redis.core.RedisChannelLayer',
-        'CONFIG' : {
-            "hosts" : [("127.0.0.1",6379)],
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [("svc.sel4.cloudtype.app", 32245)],
         },
-    }
-
+    },
 }
-
