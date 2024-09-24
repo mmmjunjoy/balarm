@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-)if-@+&1ug^)wzbf49ekj+nh00s@o#fo3#d_faz-bz4f&xwtu('
+SECRET_KEY = 'django-insecure-)if-@+&1ug^)wzbf49ekj+nh00s@o#fo3#d_faz-bz4f&xwtu('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -85,19 +85,19 @@ ASGI_APPLICATION = 'balarm.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-import environ
+# import environ
 
-import os
+# import os
 
 
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# env = environ.Env()
+# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+# SECRET_KEY = env('DJANGO_SECRET_KEY')
 
-DATABASE ={
-    'default': env.db(),
-}
+# DATABASE ={
+#     'default': env.db(),
+# }
 
 # settings.py에 추가하거나 테스트 전용 설정 파일을 만들어 사용
 # DATABASES = {
@@ -138,6 +138,23 @@ DATABASE ={
 #         'PORT' : '3306',
 #     }
 # }
+
+
+# 배포 db
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'test_bungry_alarm',
+        'USER' : 'root',
+        'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
+        'HOST' : 'svc.sel4.cloudtype.app',
+        'PORT' : '31136',
+    }
+}
+
+
+
+
 
 
 
