@@ -148,11 +148,9 @@ DATABASES = {
         'USER' : 'root',
         'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
         'HOST' : 'svc.sel4.cloudtype.app',
-        'PORT' : '31136',
+        'PORT' : '32283',
     }
 }
-
-
 
 
 
