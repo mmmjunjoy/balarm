@@ -52,7 +52,13 @@ def fetch_alarm(alarm_id):
 
 @shared_task
 def send_alarm_notification(alarm_id):
-    print(f"Celery 작업 시작:알림 id = {alarm_id}")
+    try:
+        print(f"Celery 작업 시작:알림 id = {alarm_id}")
+    
+    except Exception as e:
+        print(f"ERROR -> : {e}")
+        raise
+
 
     # 동기적으로 fetch_alarm을 호출하도록 수정
     alarm = fetch_alarm(alarm_id)
