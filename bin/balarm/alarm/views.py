@@ -14,6 +14,19 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
+
+
+class UserbungrySignUpView(APIView):
+    permission_classes =[AllowAny]
+
+    def post(self,request):
+        serializer = UserbungrySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CustomLoginView(APIView):
 
     permission_classes = [AllowAny]

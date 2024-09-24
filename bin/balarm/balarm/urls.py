@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path , include
-from alarm.views import UserbungryListAPI , AlarmAPI , DateAlarmAPI ,DateAlarmDetailAPI, CustomLoginView
+from alarm.views import UserbungryListAPI , AlarmAPI , DateAlarmAPI ,DateAlarmDetailAPI, CustomLoginView, UserbungrySignUpView
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -27,6 +27,7 @@ router = DefaultRouter()
 router.register(r'alarms', AlarmAPI , basename='alarm')
 
 urlpatterns = [
+    path('api/signup/', UserbungrySignUpView.as_view()),
     path('api/token/', CustomLoginView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/' , TokenRefreshView.as_view(), name="token_refresh"),
     path('admin/', admin.site.urls),
