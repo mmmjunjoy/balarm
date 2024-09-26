@@ -37,6 +37,7 @@ PyJWT==2.9.0
 PyMySQL==1.1.1
 pyOpenSSL==24.2.1
 python-dateutil==2.9.0.post0
+pytz==2024.2
 redis==5.0.8
 service-identity==24.1.0
 six==1.16.0
