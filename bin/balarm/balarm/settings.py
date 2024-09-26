@@ -236,7 +236,7 @@ CELERY_RESULT_BACKEND = 'redis://svc.sel4.cloudtype.app:32245/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/seoul'
+CELERY_TIMEZONE = 'Asia/Seoul'
 # Celery 설정
 
 
