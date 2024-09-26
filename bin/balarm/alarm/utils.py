@@ -15,5 +15,7 @@ def schedule_alarm(alarm):
             'alarm.tasks.send_alarm_notification',
             args = [alarm.id],
             countdown = delay
-        )
+        ),
+
+        print(f"celery 작업 호출 완료:{alarm.id} at {datetime.now()}")
     ))

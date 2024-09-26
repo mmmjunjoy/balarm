@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)if-@+&1ug^)wzbf49ekj+nh00s@o#fo3#d_faz-bz4f&xwtu('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 ALLOWED_HOSTS = ['*']
@@ -229,7 +229,8 @@ SIMPLE_JWT = {
 
 
 #celery 설정
-
+# CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
 CELERY_BROKER_URL = 'redis://svc.sel4.cloudtype.app:32245/0'
 CELERY_RESULT_BACKEND = 'redis://svc.sel4.cloudtype.app:32245/0'
 CELERY_ACCEPT_CONTENT = ['json']
@@ -260,3 +261,4 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
