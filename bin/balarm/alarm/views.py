@@ -23,6 +23,7 @@ class UserbungrySignUpView(APIView):
         serializer = UserbungrySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            print("회원가입이 완료되었습니다.")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
