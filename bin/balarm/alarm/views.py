@@ -12,7 +12,7 @@ from rest_framework_simplejwt.views import TokenViewBase
 from rest_framework.permissions import IsAuthenticated , AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from django.utils import timezone
 
 
 
@@ -66,6 +66,7 @@ class CustomLoginView(APIView):
 
 # 가입한 사람들의 목록을 조회하는 api - user 확인용 test
 class UserbungryListAPI(APIView):
+    permission_classes =[AllowAny]
     def get(self,request):
         queryset = Userbungry.objects.all()
         print(queryset)
@@ -97,12 +98,16 @@ class AlarmAPI(viewsets.ModelViewSet):
 
 #parameter 가 url에 붙어서 오지 않게 할것 - 보안 문제 !, 나의생각
 
-# 날짜별 알림 정보 api 
+# 날짜별 알림 정보 api - today 에 대한 알림 api로 사용
 class DateAlarmAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     def get(self,request): 
 
-        # date = requeset.query_params.get("date")
-        date = "2024-09-06"
+        # date = requeset.query_params.get("date") -> 이부분을, 프론트한테 받아야겠다.
+        # date = timezone.now().date()
+        date = request.data['date']
+        print("오늘날짜", date)
 
         queryset = Alarm.objects.filter(date__date = date)
 
@@ -114,8 +119,10 @@ class DateAlarmAPI(APIView):
 
 class DateAlarmDetailAPI(APIView):
     # 나의 것만, 수정하고 삭제할 수 있도록
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     def get(self, request, pk = None):
-        date ="2024-09-06"
+        date = request.data['date']
         alarm = get_object_or_404(Alarm, pk=pk, date__date= date)
         serializer = AlarmSerializer(alarm)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -123,8 +130,14 @@ class DateAlarmDetailAPI(APIView):
 
     def patch(self,request, pk=None):
 
-        date = "2024-09-06"
-        user = Userbungry.objects.get(id=1)
+        date = request.data['dates']
+        id = request.data['user_id']
+        try:
+            user = Userbungry.objects.get(id=id)
+        
+        except:
+            return Response("수정할 수 없습니다.")
+
         alarm = get_object_or_404(Alarm, pk=pk, date__date = date)
         if alarm.id_user != user:
             raise PermissionDenied("해당알림을 수정할 권한이 없습니다")
@@ -136,8 +149,14 @@ class DateAlarmDetailAPI(APIView):
 
     def delete(self,request, pk=None):
 
-        date = "2024-09-06"
-        user = Userbungry.objects.get(id=1)
+        date = request.data['dates']
+        id = request.data['user_id']
+        try:
+            user = Userbungry.objects.get(id=id)
+        
+        except:
+            return Response("삭제할 수 없습니다.")
+        
         alarm = get_object_or_404(Alarm, pk=pk , date__date =date)
         if alarm.id_user != user:
             raise PermissionDenied("해당 알람을 삭제할 권한이 없습니다")
