@@ -42,6 +42,7 @@ class CustomLoginView(APIView):
 
         try: 
             user = Userbungry.objects.get(b_id=b_id)
+            user_id = user.id
         except Userbungry.DoesNotExist:
             return Response({'detail':'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
@@ -62,6 +63,7 @@ class CustomLoginView(APIView):
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'user_id':user_id
         })
 
 
