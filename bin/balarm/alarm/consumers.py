@@ -24,6 +24,7 @@ class AlarmConsumer(AsyncWebsocketConsumer):
         
     async def send_alarm(self, event):
         message = event['message']
+        print(f"sending message - 웹소켓 : {message}")
 
         await self.send(text_data=json.dumps({
             'message':message
