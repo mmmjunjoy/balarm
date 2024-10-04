@@ -32,6 +32,22 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:8000',  # 로컬 개발 서버
+#     'http://127.0.0.1:8000',
+#     'https://port-0-balarm-m1ep4ac2e3fbce39.sel4.cloudtype.app',
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',  # 로컬 개발 서버
+    'http://127.0.0.1:8000',
+    'https://port-0-balarm-m1ep4ac2e3fbce39.sel4.cloudtype.app',
+]
+
+SECURE_SSL_REDIRECT = False
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,6 +66,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.SSLRedirectExcludeWebSocketMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -59,7 +76,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+# settings.py
+
 
 ROOT_URLCONF = 'balarm.urls'
 
