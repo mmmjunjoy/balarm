@@ -78,7 +78,8 @@ def send_alarm_notification(alarm_id):
             room_group_name,
             {
                 "type": "send_alarm",
-                "message": f"{alarm.title}"
+                "message": f"{alarm.title}",
+                'time': f"{alarm.date}"
             }
         )
         print(f"알림 전송 성공: {alarm.title}")
