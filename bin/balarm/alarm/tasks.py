@@ -69,8 +69,9 @@ def send_alarm_notification(alarm_id):
 
     user_id = alarm.id_user.id
     channel_layer = get_channel_layer()
-    # room_group_name = f"user_{user_id}_notifications"
-    room_group_name = "alarm_notifications"
+    room_group_name = f"user_{user_id}_notifications"
+    print("이방의 유저 아이디는 ->", user_id)
+    # room_group_name = "alarm_notifications"
 
     try:
         # 동기 함수로 group_send를 호출

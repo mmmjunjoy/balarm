@@ -3,13 +3,16 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class AlarmConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        #1
-        self.room_name ="alarm"
-        self.room_group_name = "alarm_notifications"
+        # #1
+        # self.room_name ="alarm"
+        # self.room_group_name = "alarm_notifications"
         #2
         # user = self.scope['user']
         # print("user -> ", user.id)
         # self.room_group_name = f"user_{user.id}_notifications"
+        #3
+        self.user_id = self.scope['query_string'].decode().split('user_id=')[1]
+        self.room_group_name = f"user_{self.user_id}_notifications"
         
 
         await self.channel_layer.group_add(
