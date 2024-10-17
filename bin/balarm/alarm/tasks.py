@@ -101,14 +101,19 @@ def send_alarm_notification(alarm_id):
             project_id = "bungry-alarm"
 
             # 푸시 알림 전송 로직
-            push_service = FCMNotification(api_key)
+            push_service = FCMNotification(api_key=api_key)
             
             print("api_key 문제?")
 
+            message_title = alarm.title
+            message_body = alarm.date
+
+            print("message ->>" , message_title , message_body)
+
             result = push_service.notify_single_device(
                 registration_id=user.fcm_token,
-                message_title=f"{alarm.title}",
-                message_body=f"{alarm.date}"
+                message_title=message_title,
+                message_body=message_body
             )
             
             print(f"푸시 알림 전송 성공: {result}")
