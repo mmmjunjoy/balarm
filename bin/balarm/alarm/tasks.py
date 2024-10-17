@@ -99,7 +99,7 @@ def send_alarm_notification(alarm_id):
                 return
 
             # 푸시 알림 전송 로직
-            push_service = FCMNotification(api_key=api_key)
+            push_service = FCMNotification(api_key)
             
             result = push_service.notify_single_device(
                 registration_id=user.fcm_token,
