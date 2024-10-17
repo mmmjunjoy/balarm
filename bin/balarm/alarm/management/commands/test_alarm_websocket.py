@@ -36,12 +36,12 @@ class Command(BaseCommand):
 
         # 웹소켓 설정
         communicator_a = WebsocketCommunicator(application, f"/ws/alarm/")
-        communicator_a.scope['user'] = user_a  # 유저 A 웹소켓 연결
+        # communicator_a.scope['user'] = user_a  # 유저 A 웹소켓 연결
         connected_a, subprotocol_a = await communicator_a.connect()
         print(f"유저 A 웹소켓 연결: {connected_a}")
 
         communicator_b = WebsocketCommunicator(application, f"/ws/alarm/")
-        communicator_b.scope['user'] = user_b  # 유저 B 웹소켓 연결
+        # communicator_b.scope['user'] = user_b  # 유저 B 웹소켓 연결
         connected_b, subprotocol_b = await communicator_b.connect()
         print(f"유저 B 웹소켓 연결: {connected_b}")
 

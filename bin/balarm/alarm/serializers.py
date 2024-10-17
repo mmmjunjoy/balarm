@@ -11,6 +11,14 @@ class UserbungrySerializer(serializers.ModelSerializer):
         user = Userbungry.objects.create(**validated_data)
         return user
 
+    def update(self, instance, validated_data):
+        # fcm_token 업데이트 로직 추가
+        fcm_token = validated_data.get('fcm_token', None)
+        if fcm_token is not None:
+            instance.fcm_token = fcm_token
+        instance.save()
+        return instance
+
 
 
 class AlarmSerializer(serializers.ModelSerializer):

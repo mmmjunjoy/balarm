@@ -1,44 +1,14 @@
 from celery import shared_task
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import Alarm
+from .models import Alarm ,Userbungry
 from balarm.celery import app
 from asgiref.sync import sync_to_async
 import asyncio
 import time
+from pyfcm import FCMNotification  # 푸시 알림 모듈
 
-# #비동기로 orm 관리를 해주기 위하여 
-# async def fetch_alarm(alarm_id):
-#     alarm = await sync_to_async(Alarm.objects.get)(id=alarm_id)
-#     return alarm
-
-# @shared_task
-# # @app.task(queue='test_queue')
-# def send_alarm_notification(alarm_id):
-#     print(f"알림전송:{alarm_id}")
-
-#     try:
-#         alarm = asyncio.run(fetch_alarm(alarm_id))
-#         # alarm = Alarm.objects.get(id=alarm_id)
-#         user_id = alarm.id_user.id
-#         channel_layer = get_channel_layer()
-#         room_group_name = f"user_{user_id}_notifications"
-
-#         async_to_sync(channel_layer.group_send)(
-#             "room_group_name",
-#             {
-#                 "type":"send_alarm",
-#                 "message":f"{alarm.title}"
-#             }
-#         )
-
-#         print(f"알림 전송 성공: {alarm.title}")
-    
-#     except Alarm.DoesNotExist:
-#         print("해당 알림을 찾을 수 없습니다")
-
-
-#2
+#correct
 
 def fetch_alarm(alarm_id):
     for _ in range(5):  # 5번 재시도
@@ -49,6 +19,18 @@ def fetch_alarm(alarm_id):
             print("해당 알림을 찾을 수 없습니다. 재시도 중...")
             time.sleep(1)  # 1초 대기 후 재시도
     return None
+
+
+def get_user_web_active_status(user_id):
+    """
+    유저의 web_active 상태를 반환합니다.
+    """
+    try:
+        user = Userbungry.objects.get(id=user_id)
+        return user.web_active
+    except Userbungry.DoesNotExist:
+        print(f"유저를 찾을 수 없습니다. id: {user_id}")
+        return None
 
 @shared_task
 def send_alarm_notification(alarm_id):
@@ -73,19 +55,54 @@ def send_alarm_notification(alarm_id):
     print("이방의 유저 아이디는 ->", user_id)
     # room_group_name = "alarm_notifications"
 
-    try:
-        # 동기 함수로 group_send를 호출
-        async_to_sync(channel_layer.group_send)(
-            room_group_name,
-            {
-                "type": "send_alarm",
-                "message": f"{alarm.title}",
-                'time': f"{alarm.date}"
-            }
-        )
-        print(f"알림 전송 성공: {alarm.title}")
 
-    except Exception as e:
-        print(f"알림 전송 실패: {str(e)}")
+    # <----병행 처리----->
+    
+    # 유저의 web_active 상태 확인
+    web_active = get_user_web_active_status(user_id)
+    
+    if web_active == 1:
+        # 웹소켓으로 알림 전송
+        try:
+            # 동기 함수로 group_send를 호출
+            async_to_sync(channel_layer.group_send)(
+                room_group_name,
+                {
+                    "type": "send_alarm",
+                    "message": f"{alarm.title}",
+                    'time': f"{alarm.date}"
+                }
+            )
+            print(f"웹소켓 알림 전송 성공: {alarm.title} ")
+
+        except Exception as e:
+            print(f"웹소켓 알림 전송 실패: {str(e)}")
+
+    elif web_active == 0:
+        # 푸시 알림 전송
+        try:
+            user = Userbungry.objects.get(id=user_id)
+            
+            if not user.fcm_token:
+                print("FCM 토큰이 없습니다.")
+                return
+            
+            # 푸시 알림 전송 로직
+            push_service = FCMNotification(api_key="YOUR_SERVER_KEY")
+            
+            result = push_service.notify_single_device(
+                registration_id=user.fcm_token,
+                message_title=f"{alarm.title}",
+                message_date=f"{alarm.date}"
+            )
+            
+            print(f"푸시 알림 전송 성공: {result}")
+        except Exception as e:
+            print(f"푸시 알림 전송 실패: {str(e)}")
+    else:
+        print("유효하지 않은 유저 상태 또는 유저를 찾을 수 없습니다.")
+
+
+
 
 

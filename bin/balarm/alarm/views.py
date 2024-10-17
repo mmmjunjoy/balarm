@@ -67,6 +67,27 @@ class CustomLoginView(APIView):
         })
 
 
+# fcm 토큰을 받을 부분
+class SaveFCMTokenView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  # JWT 토큰으로 인증
+
+    def post(self, request):
+        user = request.user  # JWT 토큰을 통해 인증된 유저 정보
+        token = request.data.get('fcm_token')
+
+        if user and token:
+            # Serializer를 사용하여 FCM 토큰 업데이트
+            serializer = UserbungrySerializer(user, data={'fcm_token': token}, partial=True)
+            if serializer.is_valid():
+                serializer.save()  # 이 부분에서 serializer의 update 메서드 호출
+                return Response({"message": "FCM 토큰이 저장되었습니다."}, status=status.HTTP_200_OK)
+            return Response({"error": "유저 정보를 업데이트할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"error": "유저 또는 FCM 토큰이 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 # 가입한 사람들의 목록을 조회하는 api - user 확인용 test
 class UserbungryListAPI(APIView):
     permission_classes =[AllowAny]

@@ -66,7 +66,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'alarm.middleware.SSLRedirectExcludeWebSocketMiddleware',
+    # 'alarm.middleware.JWTAuthMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -151,29 +151,29 @@ ASGI_APPLICATION = 'balarm.asgi.application'
 #     }
 
 # 실제
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'bungry_alarm',
-#         'USER' : 'root',
-#         'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
-#         'HOST' : '127.0.0.1',
-#         'PORT' : '3306',
-#     }
-# }
-
-
-# 배포 db
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test_bungry_alarm',
+        'NAME': 'bungry_alarm',
         'USER' : 'root',
         'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
-        'HOST' : 'svc.sel4.cloudtype.app',
-        'PORT' : '32283',
+        'HOST' : '127.0.0.1',
+        'PORT' : '3306',
     }
 }
+
+
+# 배포 db
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'test_bungry_alarm',
+#         'USER' : 'root',
+#         'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
+#         'HOST' : 'svc.sel4.cloudtype.app',
+#         'PORT' : '32283',
+#     }
+# }
 
 
 
@@ -252,10 +252,10 @@ SIMPLE_JWT = {
 
 
 #celery 설정
-# CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
-# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
-CELERY_BROKER_URL = 'redis://svc.sel4.cloudtype.app:32245/0'
-CELERY_RESULT_BACKEND = 'redis://svc.sel4.cloudtype.app:32245/0'
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+# CELERY_BROKER_URL = 'redis://svc.sel4.cloudtype.app:32245/0'
+# CELERY_RESULT_BACKEND = 'redis://svc.sel4.cloudtype.app:32245/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -266,22 +266,38 @@ CELERY_TIMEZONE = 'Asia/Seoul'
 
 #redis를 사용하여 채널 레이어 설정
 
-# CHANNEL_LAYERS = {
-#     'default' : {
-#         'BACKEND' : 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG' : {
-#             "hosts" : [("127.0.0.1",6379)],
-#         },
-#     }
-
-# }
-
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [("svc.sel4.cloudtype.app", 32245)],
+    'default' : {
+        'BACKEND' : 'channels_redis.core.RedisChannelLayer',
+        'CONFIG' : {
+            "hosts" : [("127.0.0.1",6379)],
         },
-    },
+    }
+
 }
 
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [("svc.sel4.cloudtype.app", 32245)],
+#         },
+#     },
+# }
+
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }

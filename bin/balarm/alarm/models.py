@@ -35,6 +35,11 @@ class Userbungry(AbstractBaseUser,PermissionsMixin):
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    # 웹소켓과, 푸시알림 처리 병행을 위해, 컬럼 추가
+    web_active = models.BooleanField(default=False)
+    # fcm_token 을 저장하기 위한, 컬럼 추가
+    fcm_token = models.CharField(max_length=255, blank=True, null=True)
+
 
     USERNAME_FIELD = 'id'
     REQUIRED_FIELDS = [ ]
