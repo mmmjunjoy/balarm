@@ -39,6 +39,7 @@ class CustomLoginView(APIView):
     def post(self, request):
         b_id = request.data.get('b_id')
         password = request.data.get('password')
+        device_type = request.data.get('device_type')
 
         try: 
             user = Userbungry.objects.get(b_id=b_id)
@@ -48,6 +49,9 @@ class CustomLoginView(APIView):
         
         if user.password != password:
             return Response({'detail':'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user.device_type = device_type
+        user.save()
 
         try:
             refresh = RefreshToken.for_user(user)

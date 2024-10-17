@@ -39,6 +39,8 @@ class Userbungry(AbstractBaseUser,PermissionsMixin):
     web_active = models.BooleanField(default=False)
     # fcm_token 을 저장하기 위한, 컬럼 추가
     fcm_token = models.CharField(max_length=255, blank=True, null=True)
+    # ios or android 처리
+    device_type = models.CharField(max_length=70 , null = True)
 
 
     USERNAME_FIELD = 'id'

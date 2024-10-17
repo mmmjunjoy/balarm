@@ -87,8 +87,19 @@ def send_alarm_notification(alarm_id):
                 print("FCM 토큰이 없습니다.")
                 return
             
+
+            if user.device_type == 'ios':
+                api_key = "AIzaSyAwyOfEI7-rNz7lB4VeX3L_azMg1Pbu2TE"
+            
+            elif user.device_type == 'android':
+                api_key = "AIzaSyA9wog-McyIrpg87egkxCcVahpaV0Ne_dg"
+            
+            else:
+                print("알 수 없는 Device_type")
+                return
+
             # 푸시 알림 전송 로직
-            push_service = FCMNotification(api_key="YOUR_SERVER_KEY")
+            push_service = FCMNotification(api_key=api_key)
             
             result = push_service.notify_single_device(
                 registration_id=user.fcm_token,
