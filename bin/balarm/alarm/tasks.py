@@ -106,7 +106,7 @@ def send_alarm_notification(alarm_id):
             print("api_key 문제?")
 
             message_title = alarm.title
-            message_body = alarm.date
+            message_body = alarm.date.isoformat()
 
             print("message ->>" , message_title , message_body)
 
