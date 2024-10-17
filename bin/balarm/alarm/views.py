@@ -81,6 +81,7 @@ class SaveFCMTokenView(APIView):
             serializer = UserbungrySerializer(user, data={'fcm_token': token}, partial=True)
             if serializer.is_valid():
                 serializer.save()  # 이 부분에서 serializer의 update 메서드 호출
+                print("fcm 토큰 저장 완료")
                 return Response({"message": "FCM 토큰이 저장되었습니다."}, status=status.HTTP_200_OK)
             return Response({"error": "유저 정보를 업데이트할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
