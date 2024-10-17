@@ -101,7 +101,7 @@ def send_alarm_notification(alarm_id):
             project_id = "bungry-alarm"
 
             # 푸시 알림 전송 로직
-            push_service = FCMNotification(api_key=api_key)
+            push_service = FCMNotification(api_key , project_id)
             
             print("api_key 문제?")
 
