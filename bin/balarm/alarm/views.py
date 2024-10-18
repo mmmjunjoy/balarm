@@ -16,6 +16,42 @@ from django.utils import timezone
 
 
 
+# 회원탈퇴 api
+
+class WithdrawView(APIView):
+    permission_classes =[AllowAny]
+    def post(self,request):
+        user_id = request.data.get('user_id')
+        try:
+            user = Userbungry.objects.get(id=user_id)
+            user.delete()
+            print("회원탈퇴 완료되었습니다")
+            return Response({'detail':'회원 탈퇴가 완료되었습니다'}, status=status.HTTP_204_NO_CONTENT)
+        except:
+            print("유저를 찾을 수 없습니다")
+            return Response({'detail' : '유저를 찾을 수 없습니다'}, status=status.HTTP_404_NOT_FOUND)
+    
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  
+
+    def post(self,request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            print("블랙리스트에 등록되었습니다 -> 로그아웃")
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    
+
 class UserbungrySignUpView(APIView):
     permission_classes =[AllowAny]
 
