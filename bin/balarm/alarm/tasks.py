@@ -125,7 +125,7 @@ def send_alarm_notification(alarm_id):
             print("message ->>" , notification_title , notification_body)
 
             data_payload ={
-                "content-available" :True,
+                "content-available" :"1",
                 "title" : alarm.title,
                 "body" : time_only,
                 "priority" :"high"
