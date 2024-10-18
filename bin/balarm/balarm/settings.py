@@ -165,14 +165,21 @@ ASGI_APPLICATION = 'balarm.asgi.application'
 
 
 # 배포 db
+
+import os
+import json
+
+env_var = os.getenv('ENV_VARIABLE_NAME')
+env_data = json.loads(env_var)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test_bungry_alarm',
-        'USER' : 'root',
-        'PASSWORD' : 'whs20102011', # 설정한 비밀번호로 적어주면 된다.
-        'HOST' : 'svc.sel4.cloudtype.app',
-        'PORT' : '32283',
+        'NAME': env_data.get('DB_NAME'),
+        'USER' : env_data.get('DB_USER'),
+        'PASSWORD' : env_data.get('DB_PASSWORD'), # 설정한 비밀번호로 적어주면 된다.
+        'HOST' : env_data.get('DB_HOST'),
+        'PORT' : env_data.get('DB_PORT'),
     }
 }
 
