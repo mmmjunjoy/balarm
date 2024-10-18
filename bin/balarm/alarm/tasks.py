@@ -10,6 +10,7 @@ from pyfcm import FCMNotification  # 푸시 알림 모듈
 import os
 import json
 from google.oauth2 import service_account
+from datetime import datetime
 
 #correct
 
@@ -112,21 +113,21 @@ def send_alarm_notification(alarm_id):
                         
             print("api_key 문제?")
 
-            notification_title = alarm.title
-            notification_body = alarm.date.isoformat()
 
-            data_payload = {
-                'title' : alarm.title,
-                'date' : alarm.date.isoformat()
-            }
+            notification_title = f'"{alarm.title}" 할 시간 :)'
+
+
+            iso_string = alarm.date.isoformat()
+            time_only = iso_string[11:16]
+            notification_body = f"{time_only}!!!"
+
 
             print("message ->>" , notification_title , notification_body)
 
             result = fcm.notify(
                 fcm_token=user.fcm_token,
                 notification_title=notification_title,
-                notification_body=notification_body,
-                data_payload= data_payload
+                notification_body=notification_body
             )
 
             print(f"푸시 알림 전송 성공: {result}")
