@@ -130,13 +130,12 @@ def send_alarm_notification(alarm_id):
                 "body" : str(time_only),
                 "priority" :"high"
             }
-            
-            # data_payload = json.dumps(data_payload)
+        
 
             result = fcm.notify(
                 fcm_token=user.fcm_token,
-                # notification_title=notification_title,
-                # notification_body= notification_body,
+                notification_title=notification_title,
+                notification_body= notification_body,
                 data_payload= data_payload
             )
 
