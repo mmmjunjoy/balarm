@@ -39,7 +39,7 @@ class LogoutView(APIView):
 
     def post(self,request):
         try:
-            refresh_token = request.data["refresh_token"]
+            refresh_token = request.data.get('refresh_token')
             token = RefreshToken(refresh_token)
             token.blacklist()
 
@@ -48,6 +48,7 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         
         except Exception as e:
+            print(f"로그아웃 오류 발생: {str(e)}")
             return Response(status=status.HTTP_400_BAD_REQUEST)
     
     
