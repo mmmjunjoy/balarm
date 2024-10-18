@@ -115,12 +115,18 @@ def send_alarm_notification(alarm_id):
             notification_title = alarm.title
             notification_body = alarm.date.isoformat()
 
+            data_payload = {
+                'title' : alarm.title,
+                'date' : alarm.date.isoformat()
+            }
+
             print("message ->>" , notification_title , notification_body)
 
             result = fcm.notify(
                 fcm_token=user.fcm_token,
                 notification_title=notification_title,
-                notification_body=notification_body
+                notification_body=notification_body,
+                data_payload= data_payload
             )
 
             print(f"푸시 알림 전송 성공: {result}")
