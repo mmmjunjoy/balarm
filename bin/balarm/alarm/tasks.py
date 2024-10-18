@@ -126,8 +126,9 @@ def send_alarm_notification(alarm_id):
 
             data_payload ={
                 "content-available" :"1",
-                "notification_title" : alarm.title,
-                "notification_body" : time_only,
+                "title" : alarm.title,
+                "body" : time_only,
+                "priority" :"high"
             }
 
             result = fcm.notify(
