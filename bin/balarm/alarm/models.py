@@ -29,6 +29,15 @@ class UserbungryManager(BaseUserManager):
         return self.create_user(b_id,password, **extra_fields)
 
 
+class Group(models.Model):
+    group_code = models.CharField(max_length=70 , unique= True)
+    group_name = models.CharField(max_length=70)
+
+    def __str__(self):
+        return self.group_name
+
+
+
 class Userbungry(AbstractBaseUser,PermissionsMixin):
     b_id = models.CharField(max_length=70)
     nickname = models.CharField(max_length=70)
@@ -41,6 +50,8 @@ class Userbungry(AbstractBaseUser,PermissionsMixin):
     fcm_token = models.CharField(max_length=255, blank=True, null=True)
     # ios or android 처리
     device_type = models.CharField(max_length=70 , null = True)
+    # group 관리
+    group = models.ForeignKey(Group,on_delete=models.SET_NULL, null=True , blank=True )
 
 
     USERNAME_FIELD = 'id'
@@ -50,6 +61,8 @@ class Userbungry(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.b_id
+
+
 
 
 class Alarm(models.Model):

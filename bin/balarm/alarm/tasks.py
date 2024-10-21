@@ -52,100 +52,196 @@ def send_alarm_notification(alarm_id):
     if not alarm:
         print("알림을 찾을 수 없습니다.")
         return
-
-    user_id = alarm.id_user.id
-    channel_layer = get_channel_layer()
-    room_group_name = f"user_{user_id}_notifications"
-    print("이방의 유저 아이디는 ->", user_id)
-    # room_group_name = "alarm_notifications"
-
-
-    # <----병행 처리----->
     
-    # 유저의 web_active 상태 확인
-    web_active = get_user_web_active_status(user_id)
-    
-    if web_active == 1:
-        # 웹소켓으로 알림 전송
-        try:
-            # 동기 함수로 group_send를 호출
-            async_to_sync(channel_layer.group_send)(
-                room_group_name,
-                {
-                    "type": "send_alarm",
-                    "message": f"{alarm.title}",
-                    'time': f"{alarm.date}"
-                }
-            )
-            print(f"웹소켓 알림 전송 성공: {alarm.title} ")
+    # Group x - 사용자
 
-        except Exception as e:
-            print(f"웹소켓 알림 전송 실패: {str(e)}")
-
-    elif web_active == 0:
-        # 푸시 알림 전송
-        try:
-            user = Userbungry.objects.get(id=user_id)
-            
-            if not user.fcm_token:
-                print("FCM 토큰이 없습니다.")
-                return
-            
-
-            if user.device_type == 'ios':
-                api_key = "AIzaSyAwyOfEI7-rNz7lB4VeX3L_azMg1Pbu2TE"
-            
-            elif user.device_type == 'android':
-                api_key = "AIzaSyA9wog-McyIrpg87egkxCcVahpaV0Ne_dg"
-            
-            else:
-                print("알 수 없는 Device_type")
-                return
-
-            project_id = "bungry-alarm"
-
-    
-            # 푸시 알림 전송 로직
-            gcp_json_credentials_dict = json.loads(os.getenv('GCP_CREDENTIALS', None))
-            credentials = service_account.Credentials.from_service_account_info(gcp_json_credentials_dict, scopes=['https://www.googleapis.com/auth/firebase.messaging'])
-
-            fcm = FCMNotification(service_account_file=None, credentials=credentials, project_id=project_id)
-                        
-            print("api_key 문제?")
+    if not alarm.id_user.group:
 
 
-            notification_title = f'"{alarm.title}" 할 시간 :)'
+        user_id = alarm.id_user.id
+        channel_layer = get_channel_layer()
+        room_group_name = f"user_{user_id}_notifications"
+        print("이방의 유저 아이디는 ->", user_id)
+        # room_group_name = "alarm_notifications"
 
 
-            iso_string = alarm.date.isoformat()
-            time_only = iso_string[11:16]
-            notification_body = f"{time_only}!!!"
-
-
-            print("message ->>" , notification_title , notification_body)
-
-            data_payload ={
-                "content-available" :"1",
-                "title" : str(alarm.title),
-                "body" : str(time_only),
-                "priority" :"high"
-            }
+        # <----병행 처리----->
         
+        # 유저의 web_active 상태 확인
+        web_active = get_user_web_active_status(user_id)
 
-            result = fcm.notify(
-                fcm_token=user.fcm_token,
-                notification_title=notification_title,
-                notification_body= notification_body,
-                data_payload= data_payload
-            )
+        
+        if web_active == 1:
+            # 웹소켓으로 알림 전송
+            try:
+                # 동기 함수로 group_send를 호출
+                async_to_sync(channel_layer.group_send)(
+                    room_group_name,
+                    {
+                        "type": "send_alarm",
+                        "message": f"{alarm.title}",
+                        'time': f"{alarm.date}"
+                    }
+                )
+                print(f"웹소켓 알림 전송 성공: {alarm.title} ")
 
-            print(f"푸시 알림 전송 성공: {result}")
-        except Exception as e:
-            print(f"푸시 알림 전송 실패: {str(e)}")
+            except Exception as e:
+                print(f"웹소켓 알림 전송 실패: {str(e)}")
+
+        elif web_active == 0:
+            # 푸시 알림 전송
+            try:
+                user = Userbungry.objects.get(id=user_id)
+                
+                if not user.fcm_token:
+                    print("FCM 토큰이 없습니다.")
+                    return
+                
+
+                if user.device_type == 'ios':
+                    api_key = "AIzaSyAwyOfEI7-rNz7lB4VeX3L_azMg1Pbu2TE"
+                
+                elif user.device_type == 'android':
+                    api_key = "AIzaSyA9wog-McyIrpg87egkxCcVahpaV0Ne_dg"
+                
+                else:
+                    print("알 수 없는 Device_type")
+                    return
+
+                project_id = "bungry-alarm"
+
+        
+                # 푸시 알림 전송 로직
+                gcp_json_credentials_dict = json.loads(os.getenv('GCP_CREDENTIALS', None))
+                credentials = service_account.Credentials.from_service_account_info(gcp_json_credentials_dict, scopes=['https://www.googleapis.com/auth/firebase.messaging'])
+
+                fcm = FCMNotification(service_account_file=None, credentials=credentials, project_id=project_id)
+                            
+                print("api_key 문제?")
+
+
+                notification_title = f'"{alarm.title}" 할 시간 :)'
+
+
+                iso_string = alarm.date.isoformat()
+                time_only = iso_string[11:16]
+                notification_body = f"{time_only}!!!"
+
+
+                print("message ->>" , notification_title , notification_body)
+
+                data_payload ={
+                    "content-available" :"1",
+                    "title" : str(alarm.title),
+                    "body" : str(time_only),
+                    "priority" :"high"
+                }
+            
+
+                result = fcm.notify(
+                    fcm_token=user.fcm_token,
+                    notification_title=notification_title,
+                    notification_body= notification_body,
+                    data_payload= data_payload
+                )
+
+                print(f"푸시 알림 전송 성공: {result}")
+            except Exception as e:
+                print(f"푸시 알림 전송 실패: {str(e)}")
+        else:
+            print("유효하지 않은 유저 상태 또는 유저를 찾을 수 없습니다.")
+
+
+
+
+
+    # Group - 0 - 사용자
+
     else:
-        print("유효하지 않은 유저 상태 또는 유저를 찾을 수 없습니다.")
+        group_members = Userbungry.objects.filter(group=alarm.id_user.group)
+        for user in group_members:
+
+            if user.web_active == 1:
+
+                user_id = user.id
+                room_group_name = f"user_{user_id}_notifications"
+
+                try:
+                # 동기 함수로 group_send를 호출
+                    async_to_sync(channel_layer.group_send)(
+                        room_group_name,
+                        {
+                            "type": "send_alarm",
+                            "message": f"{alarm.title}",
+                            'time': f"{alarm.date}"
+                        }
+                    )
+                    print(f"그룹 웹소켓 알림 전송 성공: {alarm.title} ")
+
+                except Exception as e:
+                    print(f"그룹 웹소켓 알림 전송 실패: {str(e)}")
+            
+
+            else :
+
+                try:
+                    user = Userbungry.objects.get(id=user_id)
+                    
+                    if not user.fcm_token:
+                        print("FCM 토큰이 없습니다.")
+                        return
+                    
+
+                    if user.device_type == 'ios':
+                        api_key = "AIzaSyAwyOfEI7-rNz7lB4VeX3L_azMg1Pbu2TE"
+                    
+                    elif user.device_type == 'android':
+                        api_key = "AIzaSyA9wog-McyIrpg87egkxCcVahpaV0Ne_dg"
+                    
+                    else:
+                        print("알 수 없는 Device_type")
+                        return
+
+                    project_id = "bungry-alarm"
+
+            
+                    # 푸시 알림 전송 로직
+                    gcp_json_credentials_dict = json.loads(os.getenv('GCP_CREDENTIALS', None))
+                    credentials = service_account.Credentials.from_service_account_info(gcp_json_credentials_dict, scopes=['https://www.googleapis.com/auth/firebase.messaging'])
+
+                    fcm = FCMNotification(service_account_file=None, credentials=credentials, project_id=project_id)
+                                
+                    print("api_key 문제?")
 
 
+                    notification_title = f'"{alarm.title}" 할 시간 :)'
 
+
+                    iso_string = alarm.date.isoformat()
+                    time_only = iso_string[11:16]
+                    notification_body = f"{time_only}!!!"
+
+
+                    print("message ->>" , notification_title , notification_body)
+
+                    data_payload ={
+                        "content-available" :"1",
+                        "title" : str(alarm.title),
+                        "body" : str(time_only),
+                        "priority" :"high"
+                    }
+                
+
+                    result = fcm.notify(
+                        fcm_token=user.fcm_token,
+                        notification_title=notification_title,
+                        notification_body= notification_body,
+                        data_payload= data_payload
+                    )
+
+                    print(f"푸시 알림 전송 성공: {result}")
+                    
+                except Exception as e:
+                    print(f"푸시 알림 전송 실패: {str(e)}")
 
 

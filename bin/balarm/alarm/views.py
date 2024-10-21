@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from .models import Userbungry , Alarm
+from .models import Userbungry , Alarm , Group
 from rest_framework.views import APIView
 from .serializers import UserbungrySerializer,AlarmSerializer
 from rest_framework import status
@@ -13,13 +13,17 @@ from rest_framework.permissions import IsAuthenticated , AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
+import random
+import string
+
 
 
 
 # 회원탈퇴 api
 
 class WithdrawView(APIView):
-    permission_classes =[AllowAny]
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  # JWT 토큰으로 인증
     def post(self,request):
         user_id = request.data.get('user_id')
         try:
@@ -232,49 +236,84 @@ class DateAlarmDetailAPI(APIView):
 
 
 
+# group 관련 api
 
-  # Alarm API 초기 버전
 
-   
-    #  ------여기까지하면, 수정과 삭제측면에서 다른 사용자것을 건드릴수 있게 된다.----------
-    #  수정, 삭제시 내것만 가능하도록
-    # 어차피, 나의 것만 보이기 때문에, 남의 것을 볼일이 없기때문에 아래 perform_update와
-    # perform_destroy는 존재할 필요가 없다고 생각되어 주석처리
+# 랜덤으로 그룹 코드 생성해주는 api
 
-    # def perform_update(self, serializer):
-    #     # 업데이트 시 현재 사용자가 알람의 등록자인지 확인
-    #     # user = self.request.user
-    #     user = Userbungry.objects.get(id=1)
-    #     if serializer.instance.id_user != user:
-    #         raise PermissionDenied("해당 알람을 수정할 권한이 없습니다.")
-    #     serializer.save()  # id_user는 읽기 전용 필드로 설정되어 수정되지 않음
-
-    # def perform_destroy(self, instance):
-    #     # 삭제 시 현재 사용자가 알람의 등록자인지 확인
-    #     # user = self.request.user
-    #     user = Userbungry.objects.get(id=1)
-    #     if instance.id_user != user:
-    #         raise PermissionDenied("해당 알람을 삭제할 권한이 없습니다.")
-    #     instance.delete()
+class GenerateGroupCodeView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  # JWT 토큰으로 인증
+    def generate_group_code(self):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     
-  # 아래 코드는, 접근 자체가 안되도록 되어버린다. -> 이건 기획의도가 x
-    # def get_object(self):
-    #     obj = super().get_object()
-    #     user = get_object_or_404(Userbungry , id = 1)
+    def post(self,request):
+        while True:
+            group_code = self.generate_group_code()
+            if not Group.objects.filter(group_code=group_code).exists():
+                break
+        print("group code 가 정상적으로 생성되었습니다 -> ", group_code)
+        return Response({"group_code":group_code}, status=status.HTTP_200_OK)
 
-    #     if obj.id_user != user:
-    #         raise PermissionError("해당 알림에 접근할 수 없습니다")
-    #     return obj
 
 
-    # generics.CreateAPIView 를 사용했을때의 방식 - create
-    # queryset = Alarm.objects.all()
-    # serializer_class= AlarmSerializer
+# group 생성 api - 초기 생성자 해당
 
-    # APIView 를 사용했을때의 방식 - create
-    # def post(self,request):
-    #     serializer = AlarmSerializer(data = request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data , status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+class CreateGroupView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  # JWT 토큰으로 인증
+    def post(self, request):
+        group_code = request.data.get('group_code')
+        group_name = request.data.get('group_name')
+        user_id = request.data.get('user_id')
+
+        if not group_code or not group_name or not user_id:
+            print("error : 모든 필드를 입력해주세요.-> Group 생성 오류")
+            return Response({"error :모든 필드를 다 입력해주세요"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        group , created = Group.objects.get_or_create(group_code=group_code, defaults={'group_name':group_name})
+
+        if not created:
+            print("error : 이미 존재하는 그룹입니다.")
+            return Response({"error :이미 존재하는 그룹입니다"} , status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user= Userbungry.objects.get(id=user_id)
+            user.group = group
+            user.save()
+            print("good : 그룹이 성공적으로 생성되고, 유저에게 원활하게 활당되었습니다")
+            return Response({"good : 그룹이 성공적으로 생성되고, 유저에게 할당되었습니다"},status=status.HTTP_200_OK)
+        
+        except Userbungry.DoesNotExist:
+            print("error : 해당 유저를 찾을 수 없습니다")
+            return Response ({"error : 해당 유저를 찾을 수 없습니다"})
+        
+
+
+
+# group 확인 api
+
+
+class JoinGroupView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  # JWT 토큰으로 인증
+
+    def post(self, request):
+        group_code = request.data.get('group_code')
+        user_id = request.data.get('user_id')
+
+        try:
+            group = Group.objects.get(group_code=group_code)
+            user = Userbungry.objects.get(id=user_id)
+            user.group = group
+            user.save()
+            print(f"그룹{group.group_name}에 성공적으로 가입 했습니다.")
+            return Response({"message" : f"그룹 {group.group_name}에 성공적으로 가입했습니다"},status=status.HTTP_200_OK)
+        
+        except Group.DoesNotExist:
+            print("유효하지 않은 그룹 코드 입니다 !!!")
+            return Response({"error : 유효하지 않은 그룹 코드 입니다."}, status=status.HTTP_400_BAD_REQUEST)
+    
+        except Userbungry.DoesNotExist:
+            return Response({"error : 사용자를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
