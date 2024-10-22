@@ -160,10 +160,9 @@ def send_alarm_notification(alarm_id):
     else:
         group_members = Userbungry.objects.filter(group=alarm.id_user.group)
         for user in group_members:
-
+            user_id = user.id
             if user.web_active == 1:
 
-                user_id = user.id
                 room_group_name = f"user_{user_id}_notifications"
 
                 try:
