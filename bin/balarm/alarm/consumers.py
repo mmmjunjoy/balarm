@@ -18,20 +18,33 @@ class AlarmConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
         print("웹소켓 연결되었습니다.")
+
     
-    async def disconnect(self, close_code):
+    # disconnect 시점에, data를 받고 , 방 삭제
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        if 'disconnect_user' in data:
+            self.user_id = data['disconnect_user']
+            self.room_group_name = f"user_{self.user_id}_notifications"
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+            print(f"웹소켓 연결이 종료되었습니다: {self.room_group_name}")
+    
+    # async def disconnect(self, close_code):
 
-        self.user_id = self.scope['query_string'].decode().split('user_id=')[1]
-        self.room_group_name = f"user_{self.user_id}_notifications"
+    #     self.user_id = self.scope['query_string'].decode().split('user_id=')[1]
+    #     self.room_group_name = f"user_{self.user_id}_notifications"
 
-        await self.set_user_web_active(0)
+    #     await self.set_user_web_active(0)
 
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+    #     await self.channel_layer.group_discard(
+    #         self.room_group_name,
+    #         self.channel_name
+    #     )
 
-        print("웹소켓 연결이 끊겼습니다.")
+    #     print("웹소켓 연결이 끊겼습니다.")
     
     @database_sync_to_async
     def set_user_web_active(self, status):
