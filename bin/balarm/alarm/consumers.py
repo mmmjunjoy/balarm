@@ -5,23 +5,18 @@ from channels.db import database_sync_to_async
 
 class AlarmConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        # #1
-        # self.room_name ="alarm"
-        # self.room_group_name = "alarm_notifications"
-        #2
-        # user = self.scope['user']
-        # print("user -> ", user.id)
-        # self.room_group_name = f"user_{user.id}_notifications"
-        #3
+       
         self.user_id = self.scope['query_string'].decode().split('user_id=')[1]
         self.room_group_name = f"user_{self.user_id}_notifications"
         
         await self.set_user_web_active(1)
 
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
+        # 웹소켓 방이,한 유저당 2개이상 생기는 것을 방지 
+        if not self.channel_layer.groups.get(self.room_group_name):
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
 
         await self.accept()
         print("웹소켓 연결되었습니다.")
