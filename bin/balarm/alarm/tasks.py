@@ -158,6 +158,7 @@ def send_alarm_notification(alarm_id):
     # Group - 0 - 사용자
 
     else:
+        channel_layer = get_channel_layer()
         group_members = Userbungry.objects.filter(group=alarm.id_user.group)
         for user in group_members:
             user_id = user.id
