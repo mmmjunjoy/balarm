@@ -10,27 +10,28 @@ class AlarmConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"user_{self.user_id}_notifications"
         
         await self.set_user_web_active(1)
-
-        # 웹소켓 방이,한 유저당 2개이상 생기는 것을 방지 
-        if not self.channel_layer.groups.get(self.room_group_name):
-            await self.channel_layer.group_add(
-                self.room_group_name,
-                self.channel_name
-            )
+        
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
 
         await self.accept()
         print("웹소켓 연결되었습니다.")
-        print("hihi")
     
     async def disconnect(self, close_code):
 
         self.user_id = self.scope['query_string'].decode().split('user_id=')[1]
+        self.room_group_name = f"user_{self.user_id}_notifications"
+
         await self.set_user_web_active(0)
 
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+
+        print("웹소켓 연결이 끊겼습니다.")
     
     @database_sync_to_async
     def set_user_web_active(self, status):
