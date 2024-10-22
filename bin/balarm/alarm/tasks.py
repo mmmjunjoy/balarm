@@ -80,7 +80,9 @@ def send_alarm_notification(alarm_id):
                     {
                         "type": "send_alarm",
                         "message": f"{alarm.title}",
-                        'time': f"{alarm.date}"
+                        'time': f"{alarm.date}",
+                        "alarm_id" : alarm_id
+
                     }
                 )
                 print(f"웹소켓 알림 전송 성공: {alarm.title} ")
@@ -174,7 +176,8 @@ def send_alarm_notification(alarm_id):
                         {
                             "type": "send_alarm",
                             "message": f"{alarm.title}",
-                            'time': f"{alarm.date}"
+                            'time': f"{alarm.date}",
+                            "alarm_id" :alarm_id
                         }
                     )
                     print(f"그룹 웹소켓 알림 전송 성공: {alarm.title} ")
