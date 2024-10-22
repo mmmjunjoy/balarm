@@ -162,9 +162,10 @@ def send_alarm_notification(alarm_id):
         group_members = Userbungry.objects.filter(group=alarm.id_user.group)
         for user in group_members:
             user_id = user.id
-            if user.web_active == 1:
-
-                room_group_name = f"user_{user_id}_notifications"
+            web_active = get_user_web_active_status(user_id)
+            room_group_name = f"user_{user_id}_notifications"
+            
+            if web_active == 1:
 
                 try:
                 # 동기 함수로 group_send를 호출
