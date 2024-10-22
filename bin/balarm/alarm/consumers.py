@@ -26,6 +26,7 @@ class AlarmConsumer(AsyncWebsocketConsumer):
         if 'disconnect_user' in data:
             self.user_id = data['disconnect_user']
             self.room_group_name = f"user_{self.user_id}_notifications"
+            await self.set_user_web_active(0)
             await self.channel_layer.group_discard(
                 self.room_group_name,
                 self.channel_name
