@@ -184,7 +184,6 @@ def send_alarm_notification(alarm_id):
             else :
 
                 try:
-                    user = Userbungry.objects.get(id=user_id)
                     
                     if not user.fcm_token:
                         print("FCM 토큰이 없습니다.")
