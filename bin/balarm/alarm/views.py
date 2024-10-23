@@ -352,3 +352,30 @@ class LeaveGroupView(APIView):
         else:
             print("그룹에 속해있지 않습니다")
             return Response({"error : group에 속해있지 않은 사용자입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class GroupInfoView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  # JWT 토큰으로 인증
+    
+    def get(self, request):
+
+        user = request.user
+
+        if user.group:
+            group = user.group
+            group_members = Userbungry.objects.filter(group=group)
+            member_list = [{"nickname" : member.nickname , "user_id" : member.id} for member in group_members]
+
+            print(f"grouop에 해당되며, member_list -> {member_list}")
+
+            return Response ({
+                "group_status" : True,
+                "group_name" : group.group_name,
+                "group_code" : group.group_code,
+                "member" : member_list
+            }, status=status.HTTP_200_OK)
+        
+        print("개인계정입니다.")
+        return Response ({"group_status":False},status=status.HTTP_200_OK)
