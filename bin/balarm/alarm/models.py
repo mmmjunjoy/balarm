@@ -70,7 +70,7 @@ class Alarm(models.Model):
     date = models.DateTimeField()
     title = models.CharField(max_length = 150)
     detail = models.CharField(max_length=1000)
-
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
 
 
     def save(self, *args, **kwargs):

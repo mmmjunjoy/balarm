@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path , include
-from alarm.views import UserbungryListAPI , AlarmAPI , DateAlarmAPI ,DateAlarmDetailAPI, CustomLoginView, UserbungrySignUpView, SaveFCMTokenView, WithdrawView, LogoutView , GenerateGroupCodeView,CreateGroupView,JoinGroupView
+from alarm.views import UserbungryListAPI , AlarmAPI , DateAlarmAPI ,DateAlarmDetailAPI, CustomLoginView, UserbungrySignUpView, SaveFCMTokenView, WithdrawView, LogoutView , GenerateGroupCodeView,CreateGroupView,JoinGroupView, LeaveGroupView
 
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -35,6 +35,7 @@ urlpatterns = [
     path('api/groupcode/', GenerateGroupCodeView.as_view()),
     path('api/creategroup/', CreateGroupView.as_view()),
     path('api/joingroup/', JoinGroupView.as_view()),
+    path('api/leavegroup/', LeaveGroupView.as_view()),
     path('api/token/', CustomLoginView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/' , TokenRefreshView.as_view(), name="token_refresh"),
     path('admin/', admin.site.urls),

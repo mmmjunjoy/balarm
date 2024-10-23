@@ -155,15 +155,21 @@ class AlarmAPI(viewsets.ModelViewSet):
 
     def get_queryset(self):
 
-
-        # user = Userbungry.objects.get(id=1)
         user = self.request.user
-        return Alarm.objects.filter(id_user = user)
+
+        # 그룹 계정일때, 
+        if user.group:
+            return Alarm.objects.filter(group=user.group)
+        
+        # 개인 계정일떄, 
+        else:
+            return Alarm.objects.filter(id_user=user)
+   
     
     def perform_create(self, serializer):
         user = self.request.user
         # user = Userbungry.objects.get(id=1)
-        serializer.save(id_user = user)
+        serializer.save(id_user = user , group = user.group)
 
 
 #parameter 가 url에 붙어서 오지 않게 할것 - 보안 문제 !, 나의생각
@@ -317,3 +323,32 @@ class JoinGroupView(APIView):
     
         except Userbungry.DoesNotExist:
             return Response({"error : 사용자를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class LeaveGroupView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 유저만 접근 가능
+    authentication_classes = [JWTAuthentication]  # JWT 토큰으로 인증
+
+    def post(self,request):
+        user = request.user
+        group = user.group
+        if group:
+            user.group = None
+            user.save()
+            print("그룹에서 탈퇴했습니다")
+
+            # 그룹 인원 수 체킹
+            group_member = Userbungry.objects.filter(group=group).count()
+
+            if group_member == 0:
+                Alarm.objects.filter(group = group).delete()
+                group.delete()
+                print("마지막 인원 탈퇴로 인해, 모든 그룹 정보가 삭제되었습니다")
+                return Response({"message: 마지막 인원이 탈퇴하여, 그룹관련 정보가 모두 삭제되었습니다."}, status=status.HTTP_200_OK)
+            else:
+                print("원활하게 그룹에서 탈퇴되엇으며, 아직 인원이 남아있습니다.")
+                return Response({"message : group에서 탈퇴했습니다."}, status=status.HTTP_200_OK)
+        
+        else:
+            print("그룹에 속해있지 않습니다")
+            return Response({"error : group에 속해있지 않은 사용자입니다."}, status=status.HTTP_400_BAD_REQUEST)
