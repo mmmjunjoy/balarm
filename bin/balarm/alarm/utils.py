@@ -9,8 +9,10 @@ def schedule_alarm(alarm):
     delay = (alarm.date - datetime.now()).total_seconds()
     
 
+    now = datetime.now()
+    current_time = now.replace(second=0, microsecond=0)
      # 알림시간이 현재 시간보다, 전 시간 알림은 알림이 오지 않도록 변경
-    if alarm.date <= datetime.now():
+    if alarm.date <= current_time:
         print(f"이미 지난 알림입니다: {alarm.title} at {alarm.date}")
         return
 
