@@ -10,7 +10,7 @@ def schedule_alarm(alarm):
     
 
      # 알림시간이 현재 시간보다, 전 시간 알림은 알림이 오지 않도록 변경
-    if alarm.date < datetime.now():
+    if alarm.date <= datetime.now():
         print(f"이미 지난 알림입니다: {alarm.title} at {alarm.date}")
         return
 
