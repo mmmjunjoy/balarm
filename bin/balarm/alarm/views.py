@@ -62,11 +62,30 @@ class UserbungrySignUpView(APIView):
 
     def post(self,request):
         serializer = UserbungrySerializer(data=request.data)
+
+        if Userbungry.objects.filter(b_id=request.data.get('b_id')).exists():
+            print("중복된 아이디가 존재합니다.")
+            return Response ({"error" : "0" }, status=status.HTTP_400_BAD_REQUEST)
+        
         if serializer.is_valid():
             serializer.save()
             print("회원가입이 완료되었습니다.")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        error_response = {'error' : "" }
+
+        print("serializer", serializer.errors.items())
+
+        # 어떤 오류인지 반환
+        x = 0
+        for field , messages in serializer.errors.items():
+            x +=1
+            error_response['error'] += f"{messages[0]}"
+            if x == 1:
+                break
+        
+
+        return Response(error_response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomLoginView(APIView):
