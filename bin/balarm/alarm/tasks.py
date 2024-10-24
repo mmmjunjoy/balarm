@@ -11,6 +11,7 @@ import os
 import json
 from google.oauth2 import service_account
 from datetime import datetime
+from django.utils import timezone
 
 #correct
 
@@ -55,7 +56,7 @@ def send_alarm_notification(alarm_id):
     
     
     # 알림시간이 현재 시간보다, 전 시간 알림은 알림이 오지 않도록 변경
-    if alarm.date < datetime.now():
+    if alarm.date < timezone.now():
         print(f"이미 지난 알림입니다: {alarm.title} at {alarm.date}")
         return
 
