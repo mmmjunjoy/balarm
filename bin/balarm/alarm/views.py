@@ -47,6 +47,10 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
 
+            user = request.user
+            user.fcm_token = None
+            user.save()
+
             print("블랙리스트에 등록되었습니다 -> 로그아웃")
 
             return Response(status=status.HTTP_205_RESET_CONTENT)
